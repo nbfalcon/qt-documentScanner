@@ -23,13 +23,11 @@ CONFIG += sanitizer sanitize_address
 SOURCES += \
     documentscanner.cpp \
     main.cpp \
-    mainwindow.cpp \
     qscannerinterface.cpp \
     scannedpage.cpp
 
 HEADERS += \
     documentscanner.h \
-    mainwindow.h \
     qscannerinterface.h \
     scannedpage.h
 
