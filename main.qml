@@ -8,7 +8,6 @@ ApplicationWindow {
 //    required property DocumentScanner scanner
 
     property alias selectedScanner: scannerPicker.currentText
-    property var scannedImages: []
 
     title: qsTr("Document Scanner")
 
@@ -59,16 +58,24 @@ ApplicationWindow {
         anchors.fill: parent
         spacing: 16
 
-        model: scannedImages
+        model: scanner.scannedPages
+
         delegate: ColumnLayout {
-            ScannedPage {
-                image: modelData
+            QmlQImageView {
+                visible: model.item.ready
+                image: model.item.scannedPage
                 width: 400
                 height: 400
             }
 
+            BusyIndicator {
+                width: 400
+                height: 400
+                running: !model.item.ready
+            }
+
             Label {
-                text: number
+                text: index + 1
             }
         }
     }
@@ -85,9 +92,6 @@ ApplicationWindow {
 
         function onScanFinished(image) {
             console.log("Scan finished from QML\n");
-            console.log(image);
-            scannedImages.push(image);
-            scannedImages = scannedImages;
         }
     }
 }

@@ -1,4 +1,5 @@
 #include "qscannerinterface.h"
+#include <iostream>
 
 namespace qtx {
 
@@ -92,13 +93,13 @@ void SaneWorker::scan(const QString &deviceName, QPromise<QImage> *result)
 
     result->setProgressRange(0, params.bytes_per_line * params.lines);
 
-    size_t resultSize = params.bytes_per_line * params.lines;
-    uchar *buf = new uchar[resultSize];
+    size_t totalSize = params.bytes_per_line * params.lines;
+    uchar *buf = new uchar[totalSize];
 
-    size_t n_read = 0;
-    while (n_read < resultSize) {
+    size_t readBytes = 0;
+    while (readBytes < totalSize) {
         SANE_Int lastReadLength;
-        SANE_Status status = sane_read(handle, buf + n_read, resultSize - n_read, &lastReadLength);
+        SANE_Status status = sane_read(handle, buf + readBytes, totalSize - readBytes, &lastReadLength);
         if (status == SANE_STATUS_EOF) {
             break;
         }
@@ -108,8 +109,9 @@ void SaneWorker::scan(const QString &deviceName, QPromise<QImage> *result)
             delete[] buf;
             return;
         }
-        n_read += lastReadLength;
-        result->setProgressValue(n_read);
+        readBytes += lastReadLength;
+        result->setProgressValue(readBytes);
+        std::cout << "Progress: " << readBytes << "/" << totalSize << "\r" << std::flush;
     }
 
     sane_close(handle);

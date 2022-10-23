@@ -23,13 +23,15 @@ CONFIG += sanitizer sanitize_address
 SOURCES += \
     documentscanner.cpp \
     main.cpp \
+    qmlqimageview.cpp \
     qscannerinterface.cpp \
-    scannedpage.cpp
+    qvariantlistmodel.cpp
 
 HEADERS += \
     documentscanner.h \
+    qmlqimageview.h \
     qscannerinterface.h \
-    scannedpage.h
+    qvariantlistmodel.h
 
 RESOURCES += \
     qml.qrc
