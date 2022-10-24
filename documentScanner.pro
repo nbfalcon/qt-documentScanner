@@ -22,6 +22,7 @@ CONFIG += sanitizer sanitize_address
 
 SOURCES += \
     documentscanner.cpp \
+    liveqml.cpp \
     main.cpp \
     qmlqimageview.cpp \
     qscannerinterface.cpp \
@@ -29,6 +30,7 @@ SOURCES += \
 
 HEADERS += \
     documentscanner.h \
+    liveqml.h \
     qmlqimageview.h \
     qscannerinterface.h \
     qvariantlistmodel.h

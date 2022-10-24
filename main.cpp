@@ -1,5 +1,7 @@
 #include "documentscanner.h"
+#include "liveqml.h"
 #include <QGuiApplication>
+#include <QIcon>
 #include <QQmlApplicationEngine>
 #include <QQmlComponent>
 #include <QQmlContext>
@@ -11,16 +13,18 @@ int main(int argc, char *argv[])
 #endif
 
     QGuiApplication app(argc, argv);
+    app.setWindowIcon(QIcon::fromTheme("document-scan"));
 
     DocumentScanner scanner;
 
     QQmlApplicationEngine engine{};
+    qtx::LiveQML liveEngine{&engine};
+    liveEngine.setInitialProperties({{"scanner", QVariant::fromValue(&scanner)}});
+    liveEngine.load("main.qml");
 
-    engine.rootContext()->setContextProperty("scanner", QVariant::fromValue(&scanner));
-
-    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
-    if (engine.rootObjects().isEmpty())
-        return -1;
+//    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+//    if (engine.rootObjects().isEmpty())
+//        return -1;
 
     return app.exec();
 }

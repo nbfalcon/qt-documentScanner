@@ -114,14 +114,13 @@ void SaneWorker::scan(const QString &deviceName, QPromise<QImage> *result)
         std::cout << "Progress: " << readBytes << "/" << totalSize << "\r" << std::flush;
     }
 
-    sane_close(handle);
-
     QImage scannedImage(buf, params.pixels_per_line, params.lines, params.bytes_per_line, QImage::Format_RGB888, [](void *arg){
         delete[] (uchar *)arg;
     }, buf);
     result->addResult(scannedImage);
-
     result->finish();
+
+    sane_close(handle);
     delete result;
 }
 

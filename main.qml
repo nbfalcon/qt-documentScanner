@@ -1,11 +1,12 @@
+import QtQml 2.15
 import QtQuick 2.12
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.12
-import QtQml 2.15
+import Qt.labs.platform 1.1
 import org.nbfalcon.documentScanner 1.0
 
 ApplicationWindow {
-//    required property DocumentScanner scanner
+    required property DocumentScanner scanner
 
     property alias selectedScanner: scannerPicker.currentText
 
@@ -51,31 +52,61 @@ ApplicationWindow {
         }
     }
 
+//    Menu {
+//        id: pageContextMenu
+//        property ScannedPage boundTo: null
+
+//        MenuItem {
+//            text: qsTr("Delete Page")
+//            shortcut: StandardKey.Delete
+//            icon.name: "delete"
+//            onTriggered: console.log("Meow")
+//        }
+
+//        onAboutToHide: {
+//            boundTo = null
+//        }
+//    }
+
     ListView {
         visible: scanner.scannedAPage
 
-        orientation: ListView.Horizontal
         anchors.fill: parent
+        orientation: ListView.Horizontal
         spacing: 16
 
         model: scanner.scannedPages
 
         delegate: ColumnLayout {
-            QmlQImageView {
-                visible: model.item.ready
-                image: model.item.scannedPage
+            height: parent.height
+
+            Item {
+                Layout.fillHeight: true
                 width: 400
-                height: 400
+
+                BusyIndicator {
+                    anchors.centerIn: parent
+                    running: !model.item.ready
+                }
+
+                QmlQImageView {
+                    anchors.fill: parent
+                    visible: model.item.ready
+                    image: model.item.scannedPage
+                }
+
+//                MouseArea {
+//                    anchors.fill: parent
+//                    acceptedButtons: Qt.RightButton
+//                    onClicked: pageContextMenu.open()
+//                }
             }
 
-            BusyIndicator {
-                width: 400
-                height: 400
-                running: !model.item.ready
-            }
 
             Label {
                 text: index + 1
+                Layout.maximumHeight: 16
+                Layout.alignment: Qt.AlignHCenter
             }
         }
     }
