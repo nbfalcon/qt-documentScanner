@@ -7,7 +7,7 @@
 class QmlQImageView : public QQuickItem
 {
     Q_OBJECT
-    Q_PROPERTY(QImage image READ image WRITE setImage)
+    Q_PROPERTY(QImage image READ image WRITE setImage RESET setNullImage)
     QML_ELEMENT
 
 public:
@@ -15,16 +15,9 @@ public:
 
     QSGNode *updatePaintNode(QSGNode *oldNode, QQuickItem::UpdatePaintNodeData *updatePaintNodeData) override;
 
-    const QImage &image() {
-        return _image;
-    }
-
-    void setImage(const QImage &image) {
-        _image = image;
-        update();
-    }
-
-signals:
+    const QImage &image() { return _image; }
+    void setImage(const QImage &image);
+    void setNullImage();
 
 private:
     QImage _image;

@@ -88,13 +88,13 @@ ApplicationWindow {
 
                 BusyIndicator {
                     anchors.centerIn: parent
-                    running: !item.ready
+                    running: item == null ? false : !item.ready
                 }
 
                 QmlQImageView {
                     anchors.fill: parent
-                    visible: item.ready
-                    image: item.scannedPage
+                    visible: item == null ? false : item.ready
+                    image: item == null ? undefined : item.scannedPage
                 }
 
                 MouseArea {

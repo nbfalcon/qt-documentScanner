@@ -22,3 +22,12 @@ QSGNode *QmlQImageView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 
     return textureNode;
 }
+
+void QmlQImageView::setImage(const QImage &image) {
+    _image = image;
+    update();
+}
+
+void QmlQImageView::setNullImage() {
+    setImage(QImage());
+}
