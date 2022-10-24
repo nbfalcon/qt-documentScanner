@@ -7,7 +7,7 @@ QVariantListModel::QVariantListModel(QObject *parent)
 {
 }
 
-int QVariantListModel::rowCount(const QModelIndex &parent) const
+int QVariantListModel::rowCount(const QModelIndex &) const
 {
     return m_data.size();
 }
@@ -22,8 +22,11 @@ QVariant QVariantListModel::data(const QModelIndex &index, int role) const
     }
 }
 
+#define BOUNDSCHECK if (!checkIndex(index)) return;
+
 void QVariantListModel::insert(int index, QVariant datum)
 {
+    if (index != (int)m_data.size()) BOUNDSCHECK
     beginInsertRows(QModelIndex(), index, index);
     m_data.insert(m_data.begin() + index, std::move(datum));
     endInsertRows();
@@ -31,7 +34,10 @@ void QVariantListModel::insert(int index, QVariant datum)
 
 void QVariantListModel::remove(int index)
 {
+    BOUNDSCHECK
+    beginRemoveRows(QModelIndex(), index, index);
     m_data.erase(m_data.begin() + index);
+    endRemoveRows();
 }
 
 // FIXME: this is untested
@@ -54,11 +60,16 @@ void QVariantListModel::move(int source, int target)
     // Not actually moving
 }
 
+bool QVariantListModel::checkIndex(int index)
+{
+    if (index >= 0 && index < (int)m_data.size()) return true;
+    qCritical() << "qtx::QVariantListModel: index out of bounds:" << index;
+    return false;
+}
+
 QHash<int, QByteArray> QVariantListModel::roleNames() const
 {
-    QHash<int, QByteArray> roles;
-    roles[Item] = "item";
-    return roles;
+    return QHash<int, QByteArray>{{Item, "item"}};
 }
 
 } // namespace qtx

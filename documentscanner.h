@@ -7,7 +7,6 @@
 #include <QtQml>
 #include <QStringList>
 #include <QAbstractListModel>
-#include <iostream>
 
 class ScannedPage : public QObject {
     Q_OBJECT

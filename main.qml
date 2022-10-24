@@ -52,21 +52,20 @@ ApplicationWindow {
         }
     }
 
-//    Menu {
-//        id: pageContextMenu
-//        property ScannedPage boundTo: null
+    Menu {
+        id: pageContextMenu
 
-//        MenuItem {
-//            text: qsTr("Delete Page")
-//            shortcut: StandardKey.Delete
-//            icon.name: "delete"
-//            onTriggered: console.log("Meow")
-//        }
+        property int boundToIndex: -1
 
-//        onAboutToHide: {
-//            boundTo = null
-//        }
-//    }
+        MenuItem {
+            text: qsTr("Delete Page")
+            shortcut: StandardKey.Delete
+            icon.name: "delete"
+            onTriggered: {
+                scanner.scannedPages.remove(pageContextMenu.boundToIndex)
+            }
+        }
+    }
 
     ListView {
         visible: scanner.scannedAPage
@@ -78,7 +77,10 @@ ApplicationWindow {
         model: scanner.scannedPages
 
         delegate: ColumnLayout {
-            height: parent.height
+            required property int index
+            required property ScannedPage item
+
+            height: ListView.view.height
 
             Item {
                 Layout.fillHeight: true
@@ -86,20 +88,23 @@ ApplicationWindow {
 
                 BusyIndicator {
                     anchors.centerIn: parent
-                    running: !model.item.ready
+                    running: !item.ready
                 }
 
                 QmlQImageView {
                     anchors.fill: parent
-                    visible: model.item.ready
-                    image: model.item.scannedPage
+                    visible: item.ready
+                    image: item.scannedPage
                 }
 
-//                MouseArea {
-//                    anchors.fill: parent
-//                    acceptedButtons: Qt.RightButton
-//                    onClicked: pageContextMenu.open()
-//                }
+                MouseArea {
+                    anchors.fill: parent
+                    acceptedButtons: Qt.RightButton
+                    onClicked: {
+                        pageContextMenu.boundToIndex = index
+                        pageContextMenu.open()
+                    }
+                }
             }
 
 

@@ -24,6 +24,7 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
     // User API stuff
+public slots:
     int size() { return m_data.size(); }
     void insert(int index, QVariant datum);
     void remove(int index);
@@ -31,6 +32,7 @@ public:
 
 private:
     std::vector<QVariant> m_data;
+    bool checkIndex(int index);
 };
 
 } // namespace qtx
