@@ -15,8 +15,8 @@ void DocumentScanner::scan(const QString &name)
     auto *watcher = new QFutureWatcher<QImage>(this);
     watcher->setFuture(future);
 
-    ScannedPage *page = new ScannedPage(&_scannedPages);
-    _scannedPages.insert(_scannedPages.size(), QVariant::fromValue(page));
+    ScannedPage *page = new ScannedPage{};
+    _scannedPages.insert(_scannedPages.size(), page);
 
     QObject::connect(watcher, &QFutureWatcherBase::finished, [this, future, page](){
         auto image = future.result();
@@ -27,7 +27,7 @@ void DocumentScanner::scan(const QString &name)
     });
 
     _scannedAPage = true;
-    pageScanned();
+    emit pageScanned();
 }
 
 void DocumentScanner::handleScannersRediscovered()

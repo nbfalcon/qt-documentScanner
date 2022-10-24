@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
     app.setWindowIcon(QIcon::fromTheme("document-scan"));
 
-    DocumentScanner scanner;
+    DocumentScanner scanner{};
 
     QQmlApplicationEngine engine{};
     qtx::LiveQML liveEngine{&engine};

@@ -25,15 +25,15 @@ SOURCES += \
     liveqml.cpp \
     main.cpp \
     qmlqimageview.cpp \
-    qscannerinterface.cpp \
-    qvariantlistmodel.cpp
+    qobjectlistmodel.cpp \
+    qscannerinterface.cpp
 
 HEADERS += \
     documentscanner.h \
     liveqml.h \
     qmlqimageview.h \
-    qscannerinterface.h \
-    qvariantlistmodel.h
+    qobjectlistmodel.h \
+    qscannerinterface.h
 
 RESOURCES += \
     qml.qrc

@@ -2,7 +2,7 @@
 #define DOCUMENTSCANNER_H
 
 #include "qscannerinterface.h"
-#include "qvariantlistmodel.h"
+#include "qobjectlistmodel.h"
 #include <QObject>
 #include <QtQml>
 #include <QStringList>
@@ -16,6 +16,9 @@ class ScannedPage : public QObject {
 
 public:
     using QObject::QObject;
+    ~ScannedPage() {
+        qDebug() << "delete ScannedPage";
+    }
 
     bool ready() {
         return !scannedPageOrNull.isNull();
@@ -45,7 +48,7 @@ class DocumentScanner : public QObject
     Q_PROPERTY(bool scannersLoaded READ scannersLoaded NOTIFY scannersRefreshed)
     Q_PROPERTY(bool scannedAPage READ scannedAPage NOTIFY pageScanned)
 
-    Q_PROPERTY(qtx::QVariantListModel* scannedPages READ getScannedPages CONSTANT)
+    Q_PROPERTY(qtx::QObjectListModel* scannedPages READ getScannedPages CONSTANT)
     QML_ELEMENT
 
 public:
@@ -55,7 +58,7 @@ public:
 
     bool scannersLoaded() const { return _scannersLoaded; }
     bool scannedAPage() const { return _scannedAPage; }
-    qtx::QVariantListModel *getScannedPages() { return &_scannedPages; }
+    qtx::QObjectListModel *getScannedPages() { return &_scannedPages; }
 
 public slots:
     void scan(const QString &);
@@ -71,7 +74,7 @@ private slots:
 
 private:
     qtx::QScannerInterface scannerService {};
-    qtx::QVariantListModel _scannedPages {};
+    qtx::QObjectListModel _scannedPages;
     bool _scannersLoaded = false;
     bool _scannedAPage = false;
 };

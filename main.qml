@@ -62,7 +62,7 @@ ApplicationWindow {
             shortcut: StandardKey.Delete
             icon.name: "delete"
             onTriggered: {
-                scanner.scannedPages.remove(pageContextMenu.boundToIndex)
+                scanner.scannedPages.detach(pageContextMenu.boundToIndex)
             }
         }
     }
@@ -106,7 +106,6 @@ ApplicationWindow {
                     }
                 }
             }
-
 
             Label {
                 text: index + 1

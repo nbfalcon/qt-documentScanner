@@ -4,10 +4,11 @@
 #include <vector>
 #include <QObject>
 #include <QAbstractListModel>
+#include <QJSEngine>
 
 namespace qtx {
 
-class QVariantListModel : public QAbstractListModel
+class QObjectListModel : public QAbstractListModel
 {
     Q_OBJECT
 
@@ -16,22 +17,24 @@ class QVariantListModel : public QAbstractListModel
     };
 
 public:
-    explicit QVariantListModel(QObject *parent = nullptr);
+    explicit QObjectListModel(QObject *parent = nullptr);
+    ~QObjectListModel();
 
     // @override
     int rowCount(const QModelIndex& parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Roles::Item) const override;
     QHash<int, QByteArray> roleNames() const override;
 
-    // User API stuff
+    // User API (also for QML, so bounds-checked and safe)
+
 public slots:
-    int size() { return m_data.size(); }
-    void insert(int index, QVariant datum);
-    void remove(int index);
+    int size() { return m_objects.size(); }
+    void insert(int index, QObject *object);
+    void detach(int index);
     void move(int source, int target);
 
 private:
-    std::vector<QVariant> m_data;
+    std::vector<QObject *> m_objects;
     bool checkIndex(int index);
 };
 

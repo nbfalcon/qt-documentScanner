@@ -7,7 +7,7 @@
 
 namespace qtx {
 
-LiveQML::LiveQML(QQmlApplicationEngine *engine, QObject *parent)
+LiveQML::LiveQML(QQmlEngine *engine, QObject *parent)
     : QObject{parent}, engine(engine), fileWatcher(new QFileSystemWatcher(this))
 {
     QObject::connect(fileWatcher, &QFileSystemWatcher::fileChanged, this, &LiveQML::handleFileChanged);
