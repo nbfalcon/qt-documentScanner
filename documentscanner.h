@@ -12,10 +12,13 @@ class ScannedPage : public QObject {
     Q_OBJECT
     Q_PROPERTY(bool ready READ ready NOTIFY notifyImageReady)
     Q_PROPERTY(QImage scannedPage READ scannedPage NOTIFY notifyImageReady)
+    Q_PROPERTY(int imWidth READ imWidth CONSTANT)
+    Q_PROPERTY(int imHeight READ imHeight CONSTANT)
     QML_ELEMENT
 
 public:
     using QObject::QObject;
+
     ~ScannedPage() {
         qDebug() << "delete ScannedPage";
     }
@@ -33,8 +36,13 @@ public:
         notifyImageReady();
     }
 
+    int imWidth() { return _width; }
+    int imHeight() { return _height; }
+
 private:
     QImage scannedPageOrNull;
+    int _width = 600;
+    int _height = 800;
 
 signals:
     void notifyImageReady();

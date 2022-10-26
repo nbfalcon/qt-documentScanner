@@ -65,9 +65,27 @@ ApplicationWindow {
                 scanner.scannedPages.detach(pageContextMenu.boundToIndex)
             }
         }
+
+        MenuItem {
+            text: qsTr("Move Right >")
+            icon.name: "arrow-right"
+            onTriggered: {
+                scanner.scannedPages.move(pageContextMenu.boundToIndex, pageContextMenu.boundToIndex + 1);
+            }
+        }
+
+        MenuItem {
+            text: qsTr("Move Left <")
+            icon.name: "arrow-left"
+            onTriggered: {
+                if (pageContextMenu.boundToIndex > 0)
+                    scanner.scannedPages.move(pageContextMenu.boundToIndex, pageContextMenu.boundToIndex - 1);
+            }
+        }
     }
 
     ListView {
+        id: scannedPagesListView
         visible: scanner.scannedAPage
 
         anchors.fill: parent
@@ -84,7 +102,7 @@ ApplicationWindow {
 
             Item {
                 Layout.fillHeight: true
-                width: 400
+                Layout.preferredWidth: item == null ? -1 : (item.imWidth / item.imHeight) * height
 
                 BusyIndicator {
                     anchors.centerIn: parent
@@ -99,17 +117,20 @@ ApplicationWindow {
 
                 MouseArea {
                     anchors.fill: parent
+
+                    // Context Menu
                     acceptedButtons: Qt.RightButton
-                    onClicked: {
-                        pageContextMenu.boundToIndex = index
-                        pageContextMenu.open()
+                    onClicked: (event) => {
+                        if (event.button === Qt.RightButton) {
+                            pageContextMenu.boundToIndex = index
+                            pageContextMenu.open()
+                        }
                     }
                 }
             }
 
             Label {
                 text: index + 1
-                Layout.maximumHeight: 16
                 Layout.alignment: Qt.AlignHCenter
             }
         }

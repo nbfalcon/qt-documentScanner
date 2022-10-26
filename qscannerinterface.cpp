@@ -79,6 +79,15 @@ void SaneWorker::updateScanners()
 
 void SaneWorker::scan(const QString &deviceName, QPromise<QImage> *result)
 {
+    // FIXME: this is image is mocked
+    QImage mock = QImage{800, 600, QImage::Format_RGB888};
+    int r = std::rand() % 256, g = std::rand() % 256, b = std::rand() % 256;
+    mock.fill(QColor::fromRgb(r, g, b));
+    result->addResult(std::move(mock));
+    result->finish();
+    delete result;
+    return;
+
     SANE_Handle handle;
     if (sane_open(deviceName.toUtf8().constData(), &handle) != SANE_STATUS_GOOD) {
         qDebug().nospace() << "sane_open('" << deviceName << "') failed" << Qt::endl;

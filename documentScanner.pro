@@ -1,5 +1,7 @@
 QT += core gui qml quick
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+# Qt Labs Platform requires Qt Widgets on this setup.
+QT += widgets
 
 # KF5
 # QT += KWidgetsAddons KXmlGui

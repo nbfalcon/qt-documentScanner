@@ -1,6 +1,6 @@
 #include "documentscanner.h"
 #include "liveqml.h"
-#include <QGuiApplication>
+#include <QApplication>
 #include <QIcon>
 #include <QQmlApplicationEngine>
 #include <QQmlComponent>
@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
 
-    QGuiApplication app(argc, argv);
+    QApplication app(argc, argv);
     app.setWindowIcon(QIcon::fromTheme("document-scan"));
 
     DocumentScanner scanner{};
