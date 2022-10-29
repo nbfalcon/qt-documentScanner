@@ -1,4 +1,8 @@
 #include "qscannerinterface.h"
+#include <string.h>
+#include <sane/sane.h>
+#include <sane/saneopts.h>
+#include <algorithm>
 #include <iostream>
 
 namespace qtx {
@@ -77,16 +81,71 @@ void SaneWorker::updateScanners()
     emit scannersRediscovered(std::move(newDevices));
 }
 
+struct FoundOption {
+    int i = -1;
+    const SANE_Option_Descriptor *desc = nullptr;
+};
+
+const FoundOption find_descriptor(SANE_Handle handle, SANE_String_Const option_name) {
+    for (int i = 0; true; i++) {
+        const auto *descriptor = sane_get_option_descriptor(handle, i);
+        if (descriptor == nullptr) break;
+        if (strcmp(descriptor->name, option_name) == 0) {
+            return FoundOption{.i = i, .desc = descriptor};
+        }
+    }
+    return FoundOption();
+}
+
+template<class T>
+bool sanex_setopt(SANE_Handle handle, SANE_String_Const option_name, T value);
+
+template<>
+bool sanex_setopt(SANE_Handle handle, SANE_String_Const option_name, int value) {
+    auto desc_s = find_descriptor(handle, option_name);
+    int option_i = desc_s.i;
+    const auto *desc = desc_s.desc;
+    if (!desc) return false;
+    assert(desc->type == SANE_TYPE_INT);
+
+    switch (desc->constraint_type) {
+    case SANE_CONSTRAINT_NONE:
+        break;
+    case SANE_CONSTRAINT_RANGE:
+        value = std::clamp(value, desc->constraint.range->min, desc->constraint.range->max);
+        break;
+    case SANE_CONSTRAINT_WORD_LIST: {
+        int count = desc->constraint.word_list[0];
+        int distance = INT_MAX;
+        for (int i = 0; i < count; i++) {
+            int word = desc->constraint.word_list[i + 1];
+            int d = std::abs(value - word);
+            if (d < distance) {
+                distance = d;
+                value = word;
+            }
+        }
+        }
+        break;
+    case SANE_CONSTRAINT_STRING_LIST:
+        // Not actually possible
+        break;
+    }
+
+    if (sane_control_option(handle, option_i, SANE_ACTION_SET_VALUE, &value, nullptr) != SANE_STATUS_GOOD) return false;
+    return true;
+}
+
 void SaneWorker::scan(const QString &deviceName, QPromise<QImage> *result)
 {
-    // FIXME: this is image is mocked
-    QImage mock = QImage{800, 600, QImage::Format_RGB888};
-    int r = std::rand() % 256, g = std::rand() % 256, b = std::rand() % 256;
-    mock.fill(QColor::fromRgb(r, g, b));
-    result->addResult(std::move(mock));
-    result->finish();
-    delete result;
-    return;
+    // this image is mocked
+//    QImage mock = QImage{800, 600, QImage::Format_RGB888};
+//    int r = std::rand() % 256, g = std::rand() % 256, b = std::rand() % 256;
+//    mock.fill(QColor::fromRgb(r, g, b));
+//    result->addResult(std::move(mock));
+//    result->finish();
+//    delete result;
+//    return;
 
     SANE_Handle handle;
     if (sane_open(deviceName.toUtf8().constData(), &handle) != SANE_STATUS_GOOD) {
@@ -94,6 +153,12 @@ void SaneWorker::scan(const QString &deviceName, QPromise<QImage> *result)
         return;
     }
     assert(handle != nullptr);
+
+    if (sanex_setopt(handle, SANE_NAME_SCAN_X_RESOLUTION, 300)) {
+        sanex_setopt(handle, SANE_NAME_SCAN_Y_RESOLUTION, 300);
+    } else {
+        sanex_setopt(handle, SANE_NAME_SCAN_RESOLUTION, 300);
+    }
 
     SANE_Parameters params;
     sane_get_parameters(handle, &params);

@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>CropForm.qml</file>
+        <file>CropRubberBand.qml</file>
     </qresource>
 </RCC>

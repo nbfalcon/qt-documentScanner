@@ -25,9 +25,13 @@ public:
     QVariant data(const QModelIndex &index, int role = Roles::Item) const override;
     QHash<int, QByteArray> roleNames() const override;
 
-    // User API (also for QML, so bounds-checked and safe)
+    // This probably should not directly expose the impl
+    std::vector<QObject *> &asList() {
+        return m_objects;
+    }
 
 public slots:
+    // User API (also for QML, so bounds-checked and safe)
     int size() { return m_objects.size(); }
     void insert(int index, QObject *object);
     void detach(int index);

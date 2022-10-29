@@ -27,7 +27,7 @@ public:
         return !scannedPageOrNull.isNull();
     }
 
-    const QImage &scannedPage() {
+    const QImage &scannedPage() const {
         return scannedPageOrNull;
     }
 
@@ -68,8 +68,14 @@ public:
     bool scannedAPage() const { return _scannedAPage; }
     qtx::QObjectListModel *getScannedPages() { return &_scannedPages; }
 
+    enum SaveFormat {
+        PNG, TIFF, JPEG, PDF
+    };
+    Q_ENUM(SaveFormat)
+
 public slots:
     void scan(const QString &);
+    void save(const QString &fileName, SaveFormat format);
 
 signals:
     void scannersChanged();

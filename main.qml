@@ -2,7 +2,7 @@ import QtQml 2.15
 import QtQuick 2.12
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.12
-import Qt.labs.platform 1.1
+import Qt.labs.platform 1.1 as Platform
 import org.nbfalcon.documentScanner 1.0
 
 ApplicationWindow {
@@ -19,12 +19,20 @@ ApplicationWindow {
     header: ToolBar {
         RowLayout {
             ToolButton {
-                action: scanDocument
+                action: scanDocumentAction
             }
 
             ComboBox {
                 id: scannerPicker
                 model: scanner.scannerService.scannerNames
+            }
+
+            ToolButton {
+                action: saveDocumentAction
+            }
+
+            ToolButton {
+                action: configureAction
             }
         }
     }
@@ -52,12 +60,12 @@ ApplicationWindow {
         }
     }
 
-    Menu {
+    Platform.Menu {
         id: pageContextMenu
 
         property int boundToIndex: -1
 
-        MenuItem {
+        Platform.MenuItem {
             text: qsTr("Delete Page")
             shortcut: StandardKey.Delete
             icon.name: "delete"
@@ -66,7 +74,7 @@ ApplicationWindow {
             }
         }
 
-        MenuItem {
+        Platform.MenuItem {
             text: qsTr("Move Right >")
             icon.name: "arrow-right"
             onTriggered: {
@@ -74,7 +82,7 @@ ApplicationWindow {
             }
         }
 
-        MenuItem {
+        Platform.MenuItem {
             text: qsTr("Move Left <")
             icon.name: "arrow-left"
             onTriggered: {
@@ -137,10 +145,166 @@ ApplicationWindow {
     }
 
     Action {
-        id: scanDocument
+        id: scanDocumentAction
         icon.name: "document-scan"
         text: "Scan"
         onTriggered: scanner.scan(selectedScanner)
+    }
+
+    Platform.FileDialog {
+        id: saveDialog
+
+        title: qsTr("Save")
+        folder: StandardPaths.writableLocation(StandardPaths.DocumentsLocation)
+
+        fileMode: Platform.FileDialog.SaveFile
+        nameFilters: [qsTr("PNG File (*.png)"), qsTr("JPEG File (*.jpg)"), qsTr("TIFF File (*.tiff)"), qsTr("PDF File (*.pdf)")]
+
+        onAccepted: {
+            console.log("Accepted <3", this.file)
+            scanner.save(this.file, DocumentScanner.PNG)
+        }
+    }
+
+    Action {
+        id: saveDocumentAction
+        icon.name: "document-save"
+        shortcut: StandardKey.Save
+        text: "Save"
+        onTriggered: {
+            console.log(saveDialog)
+            saveDialog.open()
+        }
+    }
+
+    Drawer {
+        id: settingsDrawer
+        edge: Qt.RightEdge
+
+        ButtonGroup {
+            buttons: sideButtons.children
+        }
+
+        GridLayout {
+            columns: 2
+            columnSpacing: 16
+
+            Label {
+                text: qsTr("Scanner Area:")
+            }
+            ComboBox {
+                model: ["Auto", "A4", "A5"]
+            }
+
+            Label {
+                text: qsTr("DPI:")
+            }
+            ComboBox {
+                model: [300, 600, 900, 1200]
+            }
+
+            Label {
+                text: qsTr("Double Sided:")
+            }
+            RowLayout {
+                id: sideButtons
+                spacing: 0
+
+                Button {
+                    checkable: true
+                    checked: true
+                    text: "Front"
+                }
+                Button {
+                    checkable: true
+                    text: "Back"
+                }
+                Button {
+                    checkable: true
+                    text: "Both"
+                }
+            }
+
+            // FIXME: delay
+            // FIXME: DPI in toolbar
+            // FIXME: scan editor
+
+            CheckBox {
+                id: colorCheckBox
+                text: qsTr("Color")
+            }
+
+            CheckBox {
+                text: qsTr("Invert Colors")
+            }
+
+            CheckBox {
+                text: qsTr("Color Profile:")
+                enabled: colorCheckBox.checked
+            }
+            ComboBox {
+                model: ["sRGB"]
+                enabled: colorCheckBox.checked
+            }
+
+            Label {
+                text: "Brightness:"
+            }
+            Slider {
+                from: 0
+                to: 1
+            }
+
+            Label {
+                text: "Contrast:"
+            }
+            Slider {
+                from: 0
+                to: 1
+            }
+
+            Label {
+                text: "Gamma:"
+            }
+            Slider {
+                from: 0
+                to: 1
+            }
+
+            Label {
+                text: "Shadows:"
+            }
+            Slider {
+                from: 0
+                to: 1
+            }
+
+            CheckBox {
+                text: "Auto-Rotate"
+            }
+
+            CheckBox {
+                text: "Enable OCR"
+            }
+
+            Button {
+                text: "Cancel"
+            }
+
+            Button {
+                text: "Rescan"
+            }
+        }
+    }
+
+    Action {
+        id: configureAction
+        icon.name: "configure"
+        text: "Configure"
+        shortcut: "Ctrl+H"
+        onTriggered: {
+            settingsDrawer.open()
+        }
     }
 
     Connections {
